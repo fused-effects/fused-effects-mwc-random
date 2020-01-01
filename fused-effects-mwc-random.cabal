@@ -25,11 +25,14 @@ source-repository head
 
 library
   hs-source-dirs:      src
-  exposed-modules:     FusedEffectsMwcRandom
-                       
+  exposed-modules:     Control.Carrier.Random.Uniform.IO
+                     , Control.Effect.Random.Uniform
+
 
   build-depends:       base >= 4.10.1.0 && < 4.14
-                     
+                     , fused-effects ^>= 1
+                     , mwc-random >= 0.13.6 && < 0.15
+
 
   ghc-options:         -Wall
                        -Wincomplete-uni-patterns
