@@ -42,7 +42,7 @@ library
                      , Control.Effect.Random
 
 
-  build-depends:       base >= 4.12 && < 4.14
+  build-depends:       base >= 4.10 && < 4.14
                      , fused-effects ^>= 1
                      , mwc-random >= 0.13.6 && < 0.15
                      , vector ^>= 0.12
