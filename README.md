@@ -5,6 +5,6 @@
 
 High-quality uniformly-distributed random number generation as an effect.
 
-This library provides a `Random` effect that piggybacks atop the `mwc-random` package, which produces high-quality random numbers in efficient time.
+This library provides a `Random` effect that piggybacks atop the `mwc-random` package, which produces high-quality random numbers in efficient time. A carrier type (`Control.Carrier.Random.IO`) encapsulates generator state and provides a convenient API to seed a generator from the system.
 
-For more advanced users, there exists also a module (`Control.Carrier.Random.Instances`) that provides the orphan instances required to use most `fused-effect` stacks with the `PrimMonad` machinery that powers `mwc-random`. This module is most useful when porting monad transformer stacks that already use the @mwc-random@ API, fine-grained need to control the behavior or state of a random number generator.
+For more advanced users, there exists also a module (`Control.Carrier.Random.Instances`) that provides the orphan instances required to use most `fused-effect` stacks with the `PrimMonad` machinery that powers `mwc-random`. This module is most useful when porting monad transformer stacks that already use the `mwc-random` API, or when you have fine-grained need to control the behavior or state of a random number generator.
