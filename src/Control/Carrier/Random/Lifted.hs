@@ -1,9 +1,13 @@
 {-# LANGUAGE AllowAmbiguousTypes, FlexibleContexts, FlexibleInstances, GADTs, GeneralizedNewtypeDeriving,
              MultiParamTypeClasses, ScopedTypeVariables, TypeApplications, TypeOperators, UndecidableInstances #-}
-
-module Control.Carrier.Random.IO
+-- | This carrier lifts the internals of its random number generation into
+-- a 'LiftC' constraint, assuming the parameter to that 'LiftC' implements
+-- 'PrimMonad'. In practice, this means that your effect stack must terminate
+-- with @LiftC IO@ or @LiftC (ST s)@.
+module Control.Carrier.Random.Lifted
   ( RandomC (..)
-  , runRandom
+  , runRandomSystem
+  , runRandomSeeded
     -- * Random effect
   , module Control.Effect.Random
   ) where
@@ -40,6 +44,7 @@ instance (Algebra sig m, Member (Lift n) sig, PrimMonad n) => Algebra (Random :+
           Geometric1 p      -> Dist.geometric1 p
           Bernoulli p       -> Dist.bernoulli p
           Dirichlet t       -> Dist.dirichlet t
+          Save              -> MWC.save
 
     sendM @n (act gen) >>= k
 
@@ -51,7 +56,14 @@ instance (Algebra sig m, Member (Lift n) sig, PrimMonad n) => Algebra (Random :+
 -- This is the de facto standard way to use this carrier. Keep in mind that seeding the RNG
 -- may be a computationally intensive process, so if you need to call this function in a tight
 -- loop, either use 'runRandomSeed' or explore alternative architectures.
-runRandom :: MonadIO m => RandomC IO m a -> m a
-runRandom (RandomC act) = do
+runRandomSystem :: MonadIO m => RandomC IO m a -> m a
+runRandomSystem (RandomC act) = do
   rand <- liftIO MWC.createSystemRandom
   runReader rand act
+
+-- | Run a computation, seeding its random values from an existing 'MWC.Seed'.
+runRandomSeeded :: forall m n sig a . (Has (Lift n) sig m, PrimMonad n) => MWC.Seed -> RandomC n m a -> m a
+runRandomSeeded s (RandomC act) = do
+  rand <- sendM @n (MWC.restore s)
+  runReader rand act
+

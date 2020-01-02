@@ -37,7 +37,7 @@ source-repository head
 library
   import:              shared
   hs-source-dirs:      src
-  exposed-modules:     Control.Carrier.Random.IO
+  exposed-modules:     Control.Carrier.Random.Lifted
                      , Control.Carrier.Random.Instances
                      , Control.Effect.Random
 

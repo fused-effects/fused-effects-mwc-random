@@ -24,7 +24,8 @@ module Control.Effect.Random
   , geometric1
   , bernoulli
   , dirichlet
-  -- * Internals
+  -- * Introspection
+  , save
   , Distrib (..)
   -- * Re-exports
   , MWC.Variate
@@ -52,6 +53,7 @@ data Distrib a where
   Geometric1     :: Double -> Distrib Int
   Bernoulli      :: Double -> Distrib Bool
   Dirichlet      :: Traversable t => t Double -> Distrib (t Double)
+  Save           :: Distrib MWC.Seed
 
 data Random m k
   = forall a . Random (Distrib a) (a -> m k)
@@ -164,3 +166,8 @@ logCategorical :: (Has Random sig m, Vector v Double)
                => v Double          -- ^ List of logarithms of weights
                -> m Int
 logCategorical v = send (Random (LogCategorical v) pure)
+
+-- | Save the state of the random number generator for use with the
+-- resumptive powers of 'runRandomSeeded'.
+save :: Has Random sig m => m MWC.Seed
+save = send (Random Save pure)
