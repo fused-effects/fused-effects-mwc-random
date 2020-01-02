@@ -53,15 +53,17 @@ data Distrib a where
   Geometric1     :: Double -> Distrib Int
   Bernoulli      :: Double -> Distrib Bool
   Dirichlet      :: Traversable t => t Double -> Distrib (t Double)
-  Save           :: Distrib MWC.Seed
+
 
 data Random m k
   = forall a . Random (Distrib a) (a -> m k)
+  | Save (MWC.Seed -> m k)
 
 deriving instance Functor m => Functor (Random m)
 
 instance HFunctor Random where
   hmap f (Random d k) = Random d (f . k)
+  hmap f (Save k)     = Save (f . k)
 
 
 -- | Generate a single, uniformly-distributed random value.
@@ -170,4 +172,4 @@ logCategorical v = send (Random (LogCategorical v) pure)
 -- | Save the state of the random number generator for use with the
 -- resumptive powers of 'runRandomSeeded'.
 save :: Has Random sig m => m MWC.Seed
-save = send (Random Save pure)
+save = send (Save pure)

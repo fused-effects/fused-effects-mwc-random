@@ -44,10 +44,11 @@ instance (Algebra sig m, Member (Lift n) sig, PrimMonad n) => Algebra (Random :+
           Geometric1 p      -> Dist.geometric1 p
           Bernoulli p       -> Dist.bernoulli p
           Dirichlet t       -> Dist.dirichlet t
-          Save              -> MWC.save
 
     sendM @n (act gen) >>= k
-
+  alg (L (Save k)) = do
+    gen <- RandomC ask
+    sendM @n (MWC.save gen) >>= k
   alg (R other) = RandomC (alg (R (handleCoercible other)))
   {-# INLINE alg #-}
 
