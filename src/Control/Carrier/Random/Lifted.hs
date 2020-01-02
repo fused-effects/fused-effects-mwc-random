@@ -57,8 +57,7 @@ instance (Algebra sig m, Member (Lift n) sig, PrimMonad n) => Algebra (Random :+
 -- | Run a computation, seeding its random values from the system random number generator.
 --
 -- This is the de facto standard way to use this carrier. Keep in mind that seeding the RNG
--- may be a computationally intensive process, so if you need to call this function in a tight
--- loop, either use 'runRandomSeed' or explore alternative architectures.
+-- may be a computationally intensive process.
 runRandomSystem :: MonadIO m => RandomC IO m a -> m a
 runRandomSystem (RandomC act) = do
   rand <- liftIO MWC.createSystemRandom

@@ -194,8 +194,8 @@ logCategorical :: (Has Random sig m, Vector v Double)
                -> m Int
 logCategorical v = send (Random (LogCategorical v) pure)
 
--- | Save the state of the random number generator for use with the
--- resumptive powers of 'runRandomSeeded'.
+-- | Save the state of the random number generator to be used by subsequent
+-- carrier invocations.
 save :: Has Random sig m => m MWC.Seed
 save = send (Save pure)
 
@@ -209,7 +209,7 @@ uniformPermutation n = send (Random (Permutation n) pure)
 --   shuffles are equiprobable) of a vector. It uses Fisher-Yates
 --   shuffle algorithm.
 --
--- Implementation details prevent a native implementation of the 'uniformShuffleM'
+-- Implementation details prevent a native implementation of the 'MWC.uniformShuffleM'
 -- function. Use the native API if this is required.
 uniformShuffle :: (Has Random sig m, Vector v a)
                => v a
