@@ -68,4 +68,3 @@ runRandomSeeded :: forall m n sig a . (Has (Lift n) sig m, PrimMonad n) => MWC.S
 runRandomSeeded s (RandomC act) = do
   rand <- sendM @n (MWC.restore s)
   runReader rand act
-
