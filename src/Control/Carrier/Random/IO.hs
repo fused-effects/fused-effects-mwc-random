@@ -25,10 +25,21 @@ instance (Algebra sig m, Member (Lift n) sig, PrimMonad n) => Algebra (Random :+
   alg (L (Random dist k)) = do
     gen <- RandomC ask
     let act = case dist of
-          Uniform    -> MWC.uniform
-          UniformR r -> MWC.uniformR r
-          Normal m d -> Dist.normal m d
-          Standard   -> Dist.standard
+          Uniform           -> MWC.uniform
+          UniformR r        -> MWC.uniformR r
+          Normal m d        -> Dist.normal m d
+          Standard          -> Dist.standard
+          Exponential s     -> Dist.exponential s
+          TruncatedExp s r  -> Dist.truncatedExp s r
+          Gamma s h         -> Dist.gamma s h
+          ChiSquare d       -> Dist.chiSquare d
+          Beta a b          -> Dist.beta a b
+          Categorical w     -> Dist.categorical w
+          LogCategorical lw -> Dist.logCategorical lw
+          Geometric0 p      -> Dist.geometric0 p
+          Geometric1 p      -> Dist.geometric1 p
+          Bernoulli p       -> Dist.bernoulli p
+          Dirichlet t       -> Dist.dirichlet t
 
     sendM @n (act gen) >>= k
 
