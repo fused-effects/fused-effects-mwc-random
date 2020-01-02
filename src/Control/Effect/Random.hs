@@ -69,6 +69,10 @@ instance HFunctor Random where
   hmap f (Random d k) = Random d (f . k)
   hmap f (Save k)     = Save (f . k)
 
+instance Effect Random where
+  thread ctx handler (Random d k) = Random d (handler . (<$ ctx) . k)
+  thread ctx handler (Save  k)    = Save (handler . (<$ ctx) . k)
+
 
 -- | Generate a single, uniformly-distributed random value.
 -- The type to be generated must implement the 'Variate' typeclass.
