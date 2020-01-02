@@ -3,8 +3,8 @@ name:                fused-effects-mwc-random
 version:             0.0.0.0
 synopsis:            High-quality random number generation as an effect.
 description:         High-quality random number generation as an effect.
-homepage:            https://github.com/patrickt/fused-effects-mwc-random
-bug-reports:         https://github.com/patrickt/fused-effects-mwc-random/issues
+homepage:            https://github.com/fused-effects/fused-effects-mwc-random
+bug-reports:         https://github.com/fused-effects/fused-effects-mwc-random/issues
 license:             BSD-3-Clause
 license-file:        LICENSE
 author:              Patrick Thomson
@@ -32,7 +32,7 @@ common shared
 
 source-repository head
   type:                git
-  location:            https://github.com/patrickt/fused-effects-mwc-random.git
+  location:            https://github.com/fused-effects/fused-effects-mwc-random.git
 
 library
   import:              shared
