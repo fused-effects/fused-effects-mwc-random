@@ -24,6 +24,9 @@ module Control.Effect.Random
   , geometric1
   , bernoulli
   , dirichlet
+  -- * Permutations
+  , uniformPermutation
+  , uniformShuffle
   -- * Introspection
   , save
   , Distrib (..)
@@ -53,7 +56,8 @@ data Distrib a where
   Geometric1     :: Double -> Distrib Int
   Bernoulli      :: Double -> Distrib Bool
   Dirichlet      :: Traversable t => t Double -> Distrib (t Double)
-
+  Permutation    :: Vector v Int => Int -> Distrib (v Int)
+  Shuffle        :: Vector v a => v a -> Distrib (v a)
 
 data Random m k
   = forall a . Random (Distrib a) (a -> m k)
@@ -173,3 +177,20 @@ logCategorical v = send (Random (LogCategorical v) pure)
 -- resumptive powers of 'runRandomSeeded'.
 save :: Has Random sig m => m MWC.Seed
 save = send (Save pure)
+
+-- | Random variate generator for uniformly distributed permutations. It returns random permutation of vector [0 .. n-1]. This is the Fisher-Yates shuffle.
+uniformPermutation :: (Has Random sig m, Vector v Int)
+                   => Int
+                   -> m (v Int)
+uniformPermutation n = send (Random (Permutation n) pure)
+
+-- | Random variate generator for a uniformly distributed shuffle (all
+--   shuffles are equiprobable) of a vector. It uses Fisher-Yates
+--   shuffle algorithm.
+--
+-- Implementation details prevent a native implementation of the 'uniformShuffleM'
+-- function. Use the native API if this is required.
+uniformShuffle :: (Has Random sig m, Vector v a)
+               => v a
+               -> m (v a)
+uniformShuffle n = send (Random (Shuffle n) pure)

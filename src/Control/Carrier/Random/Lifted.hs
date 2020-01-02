@@ -44,6 +44,8 @@ instance (Algebra sig m, Member (Lift n) sig, PrimMonad n) => Algebra (Random :+
           Geometric1 p      -> Dist.geometric1 p
           Bernoulli p       -> Dist.bernoulli p
           Dirichlet t       -> Dist.dirichlet t
+          Permutation n     -> Dist.uniformPermutation n
+          Shuffle v         -> Dist.uniformShuffle v
 
     sendM @n (act gen) >>= k
   alg (L (Save k)) = do
