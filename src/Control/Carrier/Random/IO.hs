@@ -1,4 +1,4 @@
-{-# LANGUAGE AllowAmbiguousTypes, FlexibleContexts, FlexibleInstances, GeneralizedNewtypeDeriving,
+{-# LANGUAGE AllowAmbiguousTypes, FlexibleContexts, FlexibleInstances, GADTs, GeneralizedNewtypeDeriving,
              MultiParamTypeClasses, ScopedTypeVariables, TypeApplications, TypeOperators, UndecidableInstances #-}
 
 module Control.Carrier.Random.IO
@@ -16,15 +16,22 @@ import           Control.Effect.Sum
 import           Control.Monad.IO.Class
 import           Control.Monad.Primitive
 import qualified System.Random.MWC as MWC
+import qualified System.Random.MWC.Distributions as Dist
 
 newtype RandomC prim m a = RandomC (ReaderC (MWC.Gen (PrimState prim)) m a)
   deriving (Applicative, Functor, Monad, MonadIO)
 
-instance forall m n sig . (Algebra sig m, Member (Lift n) sig, PrimMonad n) => Algebra (Random :+: sig) (RandomC n m) where
-  alg (L act) = do
-    gen <- RandomC (ask @(MWC.Gen (PrimState n)))
-    case act of
-      Uniform k -> sendM @n (MWC.uniform gen) >>= k
+instance (Algebra sig m, Member (Lift n) sig, PrimMonad n) => Algebra (Random :+: sig) (RandomC n m) where
+  alg (L (Random dist k)) = do
+    gen <- RandomC ask
+    let act = case dist of
+          Uniform    -> MWC.uniform
+          UniformR r -> MWC.uniformR r
+          Normal m d -> Dist.normal m d
+          Standard   -> Dist.standard
+
+    sendM @n (act gen) >>= k
+
   alg (R other) = RandomC (alg (R (handleCoercible other)))
   {-# INLINE alg #-}
 
