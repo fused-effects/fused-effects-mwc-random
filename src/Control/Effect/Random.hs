@@ -74,14 +74,31 @@ instance Effect Random where
   thread ctx handler (Save  k)    = Save (handler . (<$ ctx) . k)
 
 
--- | Generate a single, uniformly-distributed random value.
--- The type to be generated must implement the 'Variate' typeclass.
+-- | Generate a single uniformly distributed random variate.  The
+-- range of values produced varies by type:
+--
+-- * For fixed-width integral types, the type's entire range is
+--   used.
+--
+-- * For floating point numbers, the range (0,1] is used. Zero is
+--   explicitly excluded, to allow variates to be used in
+--   statistical calculations that require non-zero values
+--   (e.g. uses of the 'log' function).
+--
+-- To generate a 'Float' variate with a range of [0,1), subtract
+-- 2**(-33).  To do the same with 'Double' variates, subtract
+-- 2**(-53).
 uniform :: (MWC.Variate a, Has Random sig m) => m a
 uniform = send (Random Uniform pure)
 {-# INLINE uniform #-}
 
--- | Generate a single, uniformly-distributed random value.
--- The type to be generated must implement the 'Variate' typeclass.
+-- | Generate single uniformly distributed random variable in a
+-- given range.
+--
+-- * For integral types inclusive range is used.
+--
+-- * For floating point numbers range (a,b] is used if one ignores
+--   rounding errors.
 uniformR :: (MWC.Variate a, Has Random sig m) => (a, a) -> m a
 uniformR r = send (Random (UniformR r) pure)
 {-# INLINE uniformR #-}
