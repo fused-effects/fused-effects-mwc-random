@@ -23,7 +23,7 @@ import qualified System.Random.MWC as MWC
 import qualified System.Random.MWC.Distributions as Dist
 
 newtype RandomC prim m a = RandomC (ReaderC (MWC.Gen (PrimState prim)) m a)
-  deriving (Applicative, Functor, Monad, MonadIO)
+  deriving (Applicative, Functor, Monad, MonadFail, MonadIO)
 
 instance (Algebra sig m, Member (Lift n) sig, PrimMonad n) => Algebra (Random :+: sig) (RandomC n m) where
   alg (L (Random dist k)) = do
