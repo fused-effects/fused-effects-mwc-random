@@ -2,6 +2,7 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE StandaloneDeriving #-}
 
@@ -75,9 +76,7 @@ data Distrib a where
 
 data Random (m :: Type -> Type) k where
   Random :: Distrib a -> Random m a
-  Save :: MWC.Seed -> Random m ()
-
-deriving instance Functor m => Functor (Random m)
+  Save :: Random m MWC.Seed
 
 -- | Generate a single uniformly distributed random variate.  The
 -- range of values produced varies by type:
@@ -94,7 +93,7 @@ deriving instance Functor m => Functor (Random m)
 -- 2**(-33).  To do the same with 'Double' variates, subtract
 -- 2**(-53).
 uniform :: (MWC.Variate a, Has Random sig m) => m a
-uniform = send (Random Uniform pure)
+uniform = send (Random Uniform)
 {-# INLINE uniform #-}
 
 -- | Generate single uniformly distributed random variable in a
@@ -105,7 +104,7 @@ uniform = send (Random Uniform pure)
 -- * For floating point numbers range (a,b] is used if one ignores
 --   rounding errors.
 uniformR :: (MWC.Variate a, Has Random sig m) => (a, a) -> m a
-uniformR r = send (Random (UniformR r) pure)
+uniformR r = send (Random (UniformR r))
 {-# INLINE uniformR #-}
 
 -- | Generate a normally distributed random variate with given mean and standard deviation.
@@ -116,11 +115,11 @@ normal ::
   -- | Standard deviation
   Double ->
   m Double
-normal m d = send (Random (Normal m d) pure)
+normal m d = send (Random (Normal m d))
 
 -- | Generate a normally distributed random variate with zero mean and unit variance.
 standard :: Has Random sig m => m Double
-standard = send (Random Standard pure)
+standard = send (Random Standard)
 
 -- | Generate an exponentially distributed random variate.
 exponential ::
@@ -128,7 +127,7 @@ exponential ::
   -- | Scale parameter
   Double ->
   m Double
-exponential s = send (Random (Exponential s) pure)
+exponential s = send (Random (Exponential s))
 
 -- | Generate truncated exponentially distributed random variate.
 truncatedExp ::
@@ -139,7 +138,7 @@ truncatedExp ::
   --   truncated. Values may be negative.
   (Double, Double) ->
   m (Double)
-truncatedExp s r = send (Random (TruncatedExp s r) pure)
+truncatedExp s r = send (Random (TruncatedExp s r))
 
 -- | Random variate generator for gamma distribution.
 gamma ::
@@ -149,7 +148,7 @@ gamma ::
   -- | Scale parameter
   Double ->
   m Double
-gamma s d = send (Random (Gamma s d) pure)
+gamma s d = send (Random (Gamma s d))
 
 -- | Random variate generator for the chi square distribution.
 chiSquare ::
@@ -157,7 +156,7 @@ chiSquare ::
   -- | Number of degrees of freedom
   Int ->
   m Double
-chiSquare d = send (Random (ChiSquare d) pure)
+chiSquare d = send (Random (ChiSquare d))
 
 -- | Random variate generator for the geometric distribution,
 -- computing the number of failures before success. Distribution's
@@ -167,7 +166,7 @@ geometric0 ::
   -- | /p/ success probability lies in (0,1]
   Double ->
   m Int
-geometric0 p = send (Random (Geometric0 p) pure)
+geometric0 p = send (Random (Geometric0 p))
 
 -- | Random variate generator for geometric distribution for number of
 -- trials. Distribution's support is [1..] (i.e. just 'geometric0'
@@ -177,7 +176,7 @@ geometric1 ::
   -- | /p/ success probability lies in (0,1]
   Double ->
   m Int
-geometric1 p = send (Random (Geometric1 p) pure)
+geometric1 p = send (Random (Geometric1 p))
 
 -- | Random variate generator for Beta distribution
 beta ::
@@ -187,7 +186,7 @@ beta ::
   -- | beta  (>0)
   Double ->
   m Double
-beta a b = send (Random (Beta a b) pure)
+beta a b = send (Random (Beta a b))
 {-# INLINE beta #-}
 
 -- | Random variate generator for Dirichlet distribution
@@ -197,7 +196,7 @@ dirichlet ::
   t Double ->
   m (t Double)
 {-# INLINE dirichlet #-}
-dirichlet t = send (Random (Dirichlet t) pure)
+dirichlet t = send (Random (Dirichlet t))
 
 -- | Random variate generator for Bernoulli distribution
 bernoulli ::
@@ -206,7 +205,7 @@ bernoulli ::
   Double ->
   m Bool
 {-# INLINE bernoulli #-}
-bernoulli p = send (Random (Bernoulli p) pure)
+bernoulli p = send (Random (Bernoulli p))
 
 -- | Random variate generator for categorical distribution.
 categorical ::
@@ -215,7 +214,7 @@ categorical ::
   v Double ->
   m Int
 {-# INLINE categorical #-}
-categorical v = send (Random (Categorical v) pure)
+categorical v = send (Random (Categorical v))
 
 -- | Random variate generator for categorical distribution where the
 --   weights are in the log domain. It's implemented in terms of
@@ -225,19 +224,19 @@ logCategorical ::
   -- | List of logarithms of weights
   v Double ->
   m Int
-logCategorical v = send (Random (LogCategorical v) pure)
+logCategorical v = send (Random (LogCategorical v))
 
 -- | Save the state of the random number generator to be used by subsequent
 -- carrier invocations.
 save :: Has Random sig m => m MWC.Seed
-save = send (Save pure)
+save = send Save
 
 -- | Random variate generator for uniformly distributed permutations. It returns random permutation of vector [0 .. n-1]. This is the Fisher-Yates shuffle.
 uniformPermutation ::
   (Has Random sig m, Vector v Int) =>
   Int ->
   m (v Int)
-uniformPermutation n = send (Random (Permutation n) pure)
+uniformPermutation n = send (Random (Permutation n))
 
 -- | Random variate generator for a uniformly distributed shuffle (all
 --   shuffles are equiprobable) of a vector. It uses Fisher-Yates
@@ -249,4 +248,4 @@ uniformShuffle ::
   (Has Random sig m, Vector v a) =>
   v a ->
   m (v a)
-uniformShuffle n = send (Random (Shuffle n) pure)
+uniformShuffle n = send (Random (Shuffle n))
