@@ -1,6 +1,6 @@
 cabal-version:       2.4
 name:                fused-effects-mwc-random
-version:             0.0.0.0
+version:             0.1.0.0
 synopsis:            High-quality random number generation as an effect.
 description:         High-quality random number generation as an effect.
 homepage:            https://github.com/fused-effects/fused-effects-mwc-random
@@ -18,6 +18,7 @@ tested-with:         GHC == 8.2.2
                    , GHC == 8.4.4
                    , GHC == 8.6.5
                    , GHC == 8.8.1
+                   , GHC == 8.10.1
 
 common shared
   ghc-options:         -Wall
@@ -27,6 +28,11 @@ common shared
                        -Widentities
                        -Wredundant-constraints
                        -fhide-source-paths
+
+  if (impl(ghc >= 8.10))
+    ghc-options:       -Wno-missing-safe-haskell-mode
+                       -Wno-prepositive-qualified-module
+
 
   default-language:    Haskell2010
 
@@ -42,8 +48,8 @@ library
                      , Control.Effect.Random
 
 
-  build-depends:       base >= 4.10 && < 4.14
-                     , fused-effects ^>= 1
+  build-depends:       base >= 4.10 && < 4.15
+                     , fused-effects ^>= 1.1
                      , mwc-random >= 0.13.6 && < 0.15
                      , vector ^>= 0.12
                      , primitive >= 0.6.4 && < 0.8
