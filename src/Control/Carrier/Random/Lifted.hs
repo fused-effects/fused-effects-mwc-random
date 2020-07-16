@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
@@ -28,6 +29,9 @@ import Control.Carrier.Lift
 import Control.Carrier.Reader
 import Control.Effect.Random
 import Control.Effect.Sum
+#if !MIN_VERSION_base(4,13,0)
+import Control.Monad.Fail
+#endif
 import Control.Monad.IO.Class
 import Control.Monad.Primitive
 import qualified System.Random.MWC as MWC
