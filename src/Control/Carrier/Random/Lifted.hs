@@ -1,5 +1,4 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
@@ -9,6 +8,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-unused-imports #-}
 
 -- | This carrier lifts the internals of its random number generation into
 -- a 'LiftC' constraint, assuming the parameter to that 'LiftC' implements
@@ -29,9 +29,7 @@ import Control.Carrier.Lift
 import Control.Carrier.Reader
 import Control.Effect.Random
 import Control.Effect.Sum
-#if !MIN_VERSION_base(4,12,0)
 import Control.Monad.Fail
-#endif
 import Control.Monad.IO.Class
 import Control.Monad.Primitive
 import qualified System.Random.MWC as MWC
