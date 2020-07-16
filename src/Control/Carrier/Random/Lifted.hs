@@ -29,7 +29,7 @@ import Control.Carrier.Lift
 import Control.Carrier.Reader
 import Control.Effect.Random
 import Control.Effect.Sum
-#if !MIN_VERSION_base(4,13,0)
+#if !MIN_VERSION_base(4,12,0)
 import Control.Monad.Fail
 #endif
 import Control.Monad.IO.Class
