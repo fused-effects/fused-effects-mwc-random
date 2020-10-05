@@ -2,7 +2,7 @@ cabal-version:       2.4
 name:                fused-effects-mwc-random
 version:             0.1.0.0
 synopsis:            High-quality random number generation as an effect.
-description:         High-quality random number generation as an effect.
+description:         This package wraps the mwc-random package and provides a convenient interface to invoke its functions from an effect stack.
 homepage:            https://github.com/fused-effects/fused-effects-mwc-random
 bug-reports:         https://github.com/fused-effects/fused-effects-mwc-random/issues
 license:             BSD-3-Clause
